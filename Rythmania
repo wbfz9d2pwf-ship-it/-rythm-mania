@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rhythm Mania</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    user-select:none;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-family:Arial,sans-serif;
+    background:#111;
+}
+
+/* ================= MENU ================= */
+
+#menu{
+    width:100%;
+    height:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    background:
+        radial-gradient(circle at 20% 20%,#ffdf54 0 8%,transparent 8.5%),
+        radial-gradient(circle at 85% 25%,#ed4b42 0 9%,transparent 9.5%),
+        radial-gradient(circle at 80% 85%,#63c6b3 0 12%,transparent 12.5%),
+        #eee8d7;
+}
+
+.menu{
+    width:min(700px,90%);
+}
+
+.logo{
+    font-size:clamp(55px,13vw,120px);
+    line-height:.78;
+    font-weight:1000;
+    letter-spacing:-7px;
+    transform:rotate(-3deg);
+    text-shadow:
+        7px 7px white,
+        11px 11px #111;
+}
+
+.logo span{
+    color:#ed3d35;
+}
+
+.subtitle{
+    margin:30px 0;
+    font-weight:900;
+    letter-spacing:5px;
+}
+
+.menu button{
+    display:block;
+    width:min(400px,90%);
+    margin:15px auto;
+    padding:17px;
+    border:4px solid #111;
+    border-radius:15px;
+    background:white;
+    font-size:20px;
+    font-weight:1000;
+    box-shadow:6px 6px #111;
+}
+
+.menu button:active{
+    transform:translate(5px,5px);
+    box-shadow:1px 1px #111;
+}
+
+#musicStatus{
+    margin-top:25px;
+    font-weight:bold;
+}
+
+/* ================= JEU ================= */
+
+#game{
+    display:none;
+    width:100%;
+    height:100%;
+    background:#9d9fea;
+}
+
+.stage{
+    width:min(1000px,100%);
+    height:100%;
+    margin:auto;
+    position:relative;
+    overflow:hidden;
+    background:
+        radial-gradient(circle,#c0a9ee 0 5%,transparent 6%),
+        #9d9fea;
+}
+
+.hud{
+    position:absolute;
+    top:15px;
+    left:15px;
+    right:15px;
+    display:flex;
+    justify-content:space-between;
+    z-index:50;
+}
+
+.hud div{
+    background:white;
+    border:4px solid #111;
+    border-radius:12px;
+    padding:8px 12px;
+    font-weight:1000;
+    box-shadow:4px 4px #111;
+}
+
+#gameTitle{
+    position:absolute;
+    top:20px;
+    width:100%;
+    text-align:center;
+    color:white;
+    font-size:clamp(30px,6vw,55px);
+    font-style:italic;
+    text-shadow:4px 4px #111;
+}
+
+#instruction{
+    position:absolute;
+    top:90px;
+    width:100%;
+    text-align:center;
+    color:white;
+    font-weight:bold;
+}
+
+/* ================= OIGNON ================= */
+
+.onion{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    width:min(430px,67vw);
+    aspect-ratio:.9/1;
+    background:#f4ca58;
+    border:8px solid #111;
+    border-radius:48% 48% 46% 46%;
+    box-shadow:0 14px rgba(0,0,0,.15);
+}
+
+/* lignes de l'oignon */
+
+.onion::before,
+.onion::after{
+    content:"";
+    position:absolute;
+    top:3%;
+    height:90%;
+    width:35%;
+    border-left:4px solid rgba(180,115,25,.35);
+    border-right:4px solid rgba(180,115,25,.35);
+    border-radius:50%;
+}
+
+.onion::before{
+    left:10%;
+}
+
+.onion::after{
+    right:10%;
+}
+
+/* yeux */
+
+.eye{
+    position:absolute;
+    top:20%;
+    width:15%;
+    aspect-ratio:1;
+    background:white;
+    border:6px solid #111;
+    border-radius:50%;
+}
+
+.eye::after{
+    content:"";
+    position:absolute;
+    width:35%;
+    height:35%;
+    background:#111;
+    border-radius:50%;
+    left:32%;
+    top:32%;
+}
+
+.eye.left{
+    left:22%;
+}
+
+.eye.right{
+    right:22%;
+}
+
+/* nez */
+
+.nose{
+    position:absolute;
+    left:50%;
+    top:36%;
+    width:12%;
+    height:10%;
+    transform:translateX(-50%);
+    border-bottom:6px solid #111;
+    border-radius:50%;
+}
+
+/* moustache */
+
+.moustache{
+    position:absolute;
+    top:43%;
+    width:34%;
+    height:14%;
+    border-bottom:9px solid #111;
+    border-radius:50%;
+}
+
+.moustache.left{
+    left:12%;
+    transform:rotate(-12deg);
+}
+
+.moustache.right{
+    right:12%;
+    transform:scaleX(-1) rotate(-12deg);
+}
+
+.moustache::before{
+    content:"";
+    position:absolute;
+    width:70%;
+    height:70%;
+    border-top:7px solid #111;
+    border-radius:50%;
+    left:5%;
+    top:15%;
+}
+
+/* bouche */
+
+.mouth{
+    position:absolute;
+    left:50%;
+    top:55%;
+    transform:translateX(-50%);
+    width:25%;
+    height:8%;
+    border-top:6px solid #111;
+    border-radius:50%;
+}
+
+/* ================= POILS ================= */
+
+.hair{
+    position:absolute;
+    width:13px;
+    height:70px;
+    background:#17110e;
+    border-radius:50%;
+    z-index:10;
+    transform-origin:top;
+}
+
+.hair.appear{
+    animation:hairAppear .2s ease-out;
+}
+
+@keyframes hairAppear{
+    from{
+        transform:scaleY(0);
+    }
+    to{
+        transform:scaleY(1);
+    }
+}
+
+.hair.removed{
+    animation:removeHair .4s forwards;
+}
+
+@keyframes removeHair{
+
+    0%{
+        transform:rotate(0) scale(1);
+        opacity:1;
+    }
+
+    25%{
+        transform:rotate(15deg) translate(8px,-15px);
+    }
+
+    100%{
+        transform:rotate(80deg) translate(70px,-100px) scale(.1);
+        opacity:0;
+    }
+}
+
+/* ================= PINCE ================= */
+
+.tweezer{
+    position:absolute;
+    left:-100px;
+    top:55%;
+    width:125px;
+    height:40px;
+    z-index:30;
+    opacity:0;
+    transform:rotate(-25deg);
+}
+
+.tweezer::before,
+.tweezer::after{
+    content:"";
+    position:absolute;
+    width:110px;
+    height:12px;
+    background:#d82c8b;
+    border:4px solid #111;
+    border-radius:8px;
+}
+
+.tweezer::before{
+    top:0;
+    transform:rotate(7deg);
+}
+
+.tweezer::after{
+    top:20px;
+    transform:rotate(-7deg);
+}
+
+.tweezer.grab{
+    animation:tweezerGrab .45s ease-out;
+}
+
+@keyframes tweezerGrab{
+
+    0%{
+        opacity:0;
+        left:-100px;
+    }
+
+    30%{
+        opacity:1;
+        left:25%;
+    }
+
+    60%{
+        opacity:1;
+        left:43%;
+    }
+
+    100%{
+        opacity:0;
+        left:65%;
+    }
+}
+
+/* ================= RYTHME ================= */
+
+.rhythm{
+    position:absolute;
+    bottom:40px;
+    left:50%;
+    transform:translateX(-50%);
+    width:100px;
+    height:100px;
+}
+
+.target{
+    position:absolute;
+    width:80px;
+    height:80px;
+    left:10px;
+    top:10px;
+    border:6px solid #111;
+    background:white;
+    border-radius:50%;
+}
+
+.beat{
+    position:absolute;
+    width:80px;
+    height:80px;
+    border:6px solid #111;
+    border-radius:50%;
+    left:10px;
+    top:10px;
+    opacity:0;
+}
+
+.beat.active{
+    animation:beat .45s ease-out;
+}
+
+@keyframes beat{
+
+    0%{
+        transform:scale(1);
+        opacity:1;
+    }
+
+    100%{
+        transform:scale(2);
+        opacity:0;
+    }
+}
+
+#action{
+    position:absolute;
+    bottom:35px;
+    right:25px;
+    padding:15px 25px;
+    border:4px solid #111;
+    background:white;
+    border-radius:15px;
+    font-weight:1000;
+    font-size:18px;
+    box-shadow:5px 5px #111;
+}
+
+/* ================= FEEDBACK ================= */
+
+#feedback{
+    position:absolute;
+    left:50%;
+    top:35%;
+    transform:translate(-50%,-50%);
+    font-size:clamp(40px,9vw,80px);
+    font-weight:1000;
+    color:white;
+    text-shadow:5px 5px #111;
+    opacity:0;
+    z-index:100;
+}
+
+#feedback.show{
+    animation:feedback .6s;
+}
+
+@keyframes feedback{
+
+    0%{
+        opacity:0;
+        transform:translate(-50%,-50%) scale(.5);
+    }
+
+    25%{
+        opacity:1;
+        transform:translate(-50%,-50%) scale(1.2);
+    }
+
+    100%{
+        opacity:0;
+        transform:translate(-50%,-50%) scale(1);
+    }
+}
+
+/* ================= RESULTAT ================= */
+
+#result{
+    display:none;
+    position:absolute;
+    inset:0;
+    background:#111;
+    color:white;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    flex-direction:column;
+}
+
+#result h2{
+    font-size:60px;
+}
+
+.resultButton{
+    padding:15px 25px;
+    margin:5px;
+    border:3px solid white;
+    border-radius:12px;
+    background:white;
+    font-weight:bold;
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:600px){
+
+    .onion{
+        width:70vw;
+    }
+
+    #gameTitle{
+        top:65px;
+        font-size:30px;
+    }
+
+    #instruction{
+        top:110px;
+        font-size:13px;
+    }
+
+    .hud{
+        font-size:11px;
+    }
+
+    .hud div{
+        padding:6px;
+    }
+
+    #action{
+        bottom:15px;
+        left:50%;
+        right:auto;
+        transform:translateX(-50%);
+        width:170px;
+    }
+
+    .rhythm{
+        bottom:75px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= MENU ================= -->
+
+<div id="menu">
+
+<div class="menu">
+
+<div class="logo">
+RHYTHM
+<span>MANIA</span>
+</div>
+
+<div class="subtitle">
+LE JEU DU RYTHME
+</div>
+
+<button onclick="startGame()">
+▶ JOUER
+</button>
+
+<button onclick="showHowTo()">
+❔ COMMENT JOUER
+</button>
+
+<button onclick="toggleMusic()" id="musicButton">
+🎵 ACTIVER LA MUSIQUE
+</button>
+
+<div id="musicStatus">
+Musique : désactivée
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ================= JEU ================= -->
+
+<div id="game">
+
+<div class="stage">
+
+<div class="hud">
+
+<div>
+SCORE : <span id="score">0</span>
+</div>
+
+<div>
+COMBO : <span id="combo">0</span>
+</div>
+
+<div>
+❤️ <span id="lives">3</span>
+</div>
+
+</div>
+
+
+<div id="gameTitle">
+Plucking an ONION?!
+</div>
+
+<div id="instruction">
+Retire les poils avec la pince au rythme !
+</div>
+
+
+<!-- OIGNON -->
+
+<div class="onion" id="onion">
+
+<div class="eye left"></div>
+<div class="eye right"></div>
+
+<div class="nose"></div>
+
+<div class="moustache left"></div>
+<div class="moustache right"></div>
+
+<div class="mouth"></div>
+
+<div class="tweezer" id="tweezer"></div>
+
+</div>
+
+
+<div id="feedback"></div>
+
+
+<!-- CERCLE DE RYTHME -->
+
+<div class="rhythm">
+
+<div class="target"></div>
+
+<div class="beat" id="beat"></div>
+
+</div>
+
+
+<button id="action" onclick="hit()">
+🪒 RETIRER
+</button>
+
+</div>
+
+</div>
+
+
+<!-- ================= RESULTAT ================= -->
+
+<div id="result">
+
+<h2 id="resultTitle">
+FIN !
+</h2>
+
+<h3>
+SCORE : <span id="finalScore">0</span>
+</h3>
+
+<p id="resultText"></p>
+
+<div>
+
+<button class="resultButton" onclick="startGame()">
+🔄 REJOUER
+</button>
+
+<button class="resultButton" onclick="backMenu()">
+🏠 MENU
+</button>
+
+</div>
+
+</div>
+
+
+<!-- ================= AUDIO ================= -->
+
+<audio id="music" loop preload="auto">
+
+<source
+src="music/think-about-the-way.mp3"
+type="audio/mpeg">
+
+</audio>
+
+
+<script>
+
+/* ================= VARIABLES ================= */
+
+const music =
+document.getElementById("music");
+
+let musicOn=false;
+
+let playing=false;
+
+let score=0;
+
+let combo=0;
+
+let lives=3;
+
+let hairs=[];
+
+let currentHair=null;
+
+let timer=null;
+
+let lastBeat=-1;
+
+let BPM=125;
+
+let beatLength=60000/BPM;
+
+let startTime=0;
+
+
+/* ================= MUSIQUE ================= */
+
+async function toggleMusic(){
+
+if(!musicOn){
+
+musicOn=true;
+
+music.volume=.45;
+
+try{
+
+await music.play();
+
+document.getElementById("musicStatus")
+.innerText="Musique : activée";
+
+document.getElementById("musicButton")
+.innerText="🔇 COUPER LA MUSIQUE";
+
+}catch(e){
+
+document.getElementById("musicStatus")
+.innerText="Appuie encore pour lancer la musique";
+
+}
+
+}else{
+
+music.pause();
+
+musicOn=false;
+
+document.getElementById("musicStatus")
+.innerText="Musique : désactivée";
+
+document.getElementById("musicButton")
+.innerText="🎵 ACTIVER LA MUSIQUE";
+
+}
+
+}
+
+
+/* ================= JEU ================= */
+
+async function startGame(){
+
+document.getElementById("menu")
+.style.display="none";
+
+document.getElementById("result")
+.style.display="none";
+
+document.getElementById("game")
+.style.display="block";
+
+
+score=0;
+
+combo=0;
+
+lives=3;
+
+playing=true;
+
+updateStats();
+
+createHairs();
+
+
+if(musicOn){
+
+music.currentTime=0;
+
+music.play().catch(()=>{});
+
+}
+
+startTime=performance.now();
+
+lastBeat=-1;
+
+
+clearInterval(timer);
+
+timer=setInterval(rhythmLoop,20);
+
+}
+
+
+/* ================= POILS ================= */
+
+function createHairs(){
+
+hairs.forEach(h=>h.remove());
+
+hairs=[];
+
+const positions=[
+
+[31,73],
+[38,75],
+[45,77],
+[52,77],
+[59,75],
+[66,73],
+
+[34,81],
+[41,83],
+[48,84],
+[55,84],
+[62,82]
+
+];
+
+
+positions.forEach((position,index)=>{
+
+const hair=document.createElement("div");
+
+hair.className="hair";
+
+hair.style.left=
+position[0]+"%";
+
+hair.style.top=
+position[1]+"%";
+
+hair.dataset.index=index;
+
+document.getElementById("onion")
+.appendChild(hair);
+
+hairs.push(hair);
+
+});
+
+}
+
+
+/* ================= RYTHME ================= */
+
+function rhythmLoop(){
+
+if(!playing)return;
+
+
+/*
+Si la musique est en train de jouer,
+on utilise sa position exacte.
+*/
+
+let time;
+
+if(musicOn && !music.paused){
+
+time=music.currentTime*1000;
+
+}else{
+
+time=performance.now()-startTime;
+
+}
+
+
+const beatNumber=
+Math.floor(time/beatLength);
+
+
+if(beatNumber!==lastBeat){
+
+lastBeat=beatNumber;
+
+doBeat(beatNumber);
+
+}
+
+}
+
+
+/* ================= BATTEMENT ================= */
+
+function doBeat(number){
+
+const beat=
+document.getElementById("beat");
+
+beat.classList.remove("active");
+
+void beat.offsetWidth;
+
+beat.classList.add("active");
+
+
+const alive=
+hairs.filter(
+h=>!h.classList.contains("removed")
+);
+
+
+if(alive.length){
+
+currentHair=
+alive[number%alive.length];
+
+currentHair.classList.add("appear");
+
+}
+
+}
+
+
+/* ================= APPUI ================= */
+
+function hit(){
+
+if(!playing)return;
+
+
+const alive=
+hairs.filter(
+h=>!h.classList.contains("removed")
+);
+
+
+if(!alive.length){
+
+endGame();
+
+return;
+
+}
+
+
+let time;
+
+if(musicOn && !music.paused){
+
+time=music.currentTime*1000;
+
+}else{
+
+time=performance.now()-startTime;
+
+}
+
+
+/*
+On calcule la distance par rapport
+au temps musical le plus proche.
+*/
+
+const nearestBeat=
+Math.round(time/beatLength);
+
+const exactBeat=
+nearestBeat*beatLength;
+
+const difference=
+Math.abs(time-exactBeat);
+
+
+let result;
+
+
+if(difference<=70){
+
+result="PERFECT";
+
+}else if(difference<=160){
+
+result="GOOD";
+
+}else{
+
+result="MISS";
+
+}
+
+
+if(result==="MISS"){
+
+combo=0;
+
+lives--;
+
+showFeedback("MISS!");
+
+updateStats();
+
+if(lives<=0){
+
+endGame();
+
+}
+
+return;
+
+}
+
+
+/* pince à épiler */
+
+const tweezer=
+document.getElementById("tweezer");
+
+tweezer.classList.remove("grab");
+
+void tweezer.offsetWidth;
+
+tweezer.classList.add("grab");
+
+
+/* retirer le poil */
+
+if(currentHair){
+
+currentHair.classList.add("removed");
+
+}
+
+
+/* score */
+
+combo++;
+
+
+if(result==="PERFECT"){
+
+score+=100+(combo*5);
+
+}else{
+
+score+=50+(combo*2);
+
+}
+
+
+showFeedback(result);
+
+updateStats();
+
+
+/* vérifier fin */
+
+const remaining=
+hairs.filter(
+h=>!h.classList.contains("removed")
+);
+
+
+if(remaining.length===0){
+
+setTimeout(endGame,500);
+
+}
+
+}
+
+
+/* ================= FEEDBACK ================= */
+
+function showFeedback(text){
+
+const feedback=
+document.getElementById("feedback");
+
+feedback.innerText=text;
+
+feedback.classList.remove("show");
+
+void feedback.offsetWidth;
+
+feedback.classList.add("show");
+
+}
+
+
+/* ================= STATS ================= */
+
+function updateStats(){
+
+document.getElementById("score")
+.innerText=score;
+
+document.getElementById("combo")
+.innerText=combo;
+
+document.getElementById("lives")
+.innerText=lives;
+
+}
+
+
+/* ================= FIN ================= */
+
+function endGame(){
+
+playing=false;
+
+clearInterval(timer);
+
+document.getElementById("finalScore")
+.innerText=score;
+
+
+if(score>=1000){
+
+document.getElementById("resultTitle")
+.innerText="🔥 INCROYABLE !";
+
+document.getElementById("resultText")
+.innerText=
+"Tu as vraiment le rythme dans la peau !";
+
+}else if(score>=500){
+
+document.getElementById("resultTitle")
+.innerText="😎 BIEN JOUÉ !";
+
+document.getElementById("resultText")
+.innerText=
+"Très bon rythme !";
+
+}else{
+
+document.getElementById("resultTitle")
+.innerText="😂 OUPS !";
+
+document.getElementById("resultText")
+.innerText=
+"Il va falloir écouter un peu plus le rythme !";
+
+}
+
+
+document.getElementById("game")
+.style.display="none";
+
+document.getElementById("result")
+.style.display="flex";
+
+}
+
+
+/* ================= MENU ================= */
+
+function backMenu(){
+
+playing=false;
+
+clearInterval(timer);
+
+document.getElementById("result")
+.style.display="none";
+
+document.getElementById("game")
+.style.display="none";
+
+document.getElementById("menu")
+.style.display="flex";
+
+}
+
+
+/* ================= COMMENT JOUER ================= */
+
+function showHowTo(){
+
+alert(
+
+"COMMENT JOUER !\n\n"+
+"🎵 La musique donne le rythme.\n\n"+
+"🪒 Appuie sur RETIRER ou ESPACE "+
+"pile sur le temps.\n\n"+
+"⭐ PERFECT = 100 points\n"+
+"👍 GOOD = 50 points\n"+
+"❌ MISS = perte d'un cœur\n\n"+
+"Plus ton combo monte, plus tu marques de points !"
+
+);
+
+}
+
+
+/* ================= CLAVIER ================= */
+
+document.addEventListener(
+"keydown",
+function(event){
+
+if(event.code==="Space"){
+
+event.preventDefault();
+
+hit();
+
+}
+
+});
+
+
+/* ================= TACTILE ================= */
+
+document.addEventListener(
+"touchstart",
+function(event){
+
+if(
+playing &&
+!event.target.closest("button")
+){
+
+hit();
+
+}
+
+},
+{passive:true}
+);
+
+</script>
+
+</body>
+</html>
